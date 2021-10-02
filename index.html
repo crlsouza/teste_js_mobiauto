@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TESTE</title>
+
+    <style>
+        body {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        section {
+            width: 400px;
+            height: 90px;
+        }
+
+        #valor {
+            width: 292px;
+            padding: 8px;
+        }
+
+        #btn_inserir {
+            padding: 8px;
+            width: 84px;   
+        }
+
+        #resultado {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+    </style>
+</head>
+<body onload="app()">
+    <section>
+        <form id="formulario">
+            <input type="number" max="9999999999.99" min="0" maxlength="11" step="0.01" placeholder="Digite um valor numérico" id="valor">
+            <input type="submit" value="Inserir" id="btn_inserir">
+        </form>
+
+        <p id="resultado"></p>
+
+        <script>
+            // Método para condição inline
+            function selecione(condicao, verdadeiro, falso) {
+                if(condicao){
+                    return verdadeiro;
+                }
+                return falso;
+            }
+
+            // Método para converter o numero em palavras
+            function valorEmReais(valor) {
+                var uni = ["","Um","Dois","Três","Quatro","Cinco","Seis","Sete","Oito","Nove"]
+                var dz = ["Dez","Onze","Doze","Treze","Quatorze","Quinze","Dezesseis","Dezessete","Dezoito","Dezenove"]
+                var dezena = ["","Dez","Vinte","Trinta","Quarenta","Cinquenta","Sessenta","Setenta","Oitenta","Noventa"]
+                var centena = ["","Cem","Duzentos","Trezentos","Quatrocentos","Quinhentos","Seiscentos","Setecentos","Oitocentos","Novecentos"]
+                
+                var valorEscrito = "";
+                var valorSemVirgula = valor.toString().split('.')[0];
+                var valorAposVirgula = valor.toString().split('.')[1];
+
+                // Unidades sem virgula
+                if(valorSemVirgula.length === 1 && valorSemVirgula > 0){ //CONTA QUANTOS DIGITOS FOI INSERIDO
+                    valorEscrito = uni[parseInt(valorSemVirgula[0])] + selecione(valorSemVirgula[0] > 1, " reais", " real"); // E IMPRIME O RESPECTIVO VALO;
+                }
+
+                //Com 2 digitos sem virgula
+                else if(valorSemVirgula.length === 2){
+                    if(valorSemVirgula < 20){
+                        valorEscrito = dz[parseInt(valorSemVirgula[1])] + " reais";
+                    }
+                    else {
+                        valorEscrito = dezena[parseInt(valorSemVirgula[0])] + selecione(valorSemVirgula[1] > 0, " e ", "") + uni[parseInt(valorSemVirgula[1])] + " reais";
+                    }
+                }
+
+                //Com 3 digitos sem virgula
+                else if(valorSemVirgula.length === 3){
+                    // Atribui centena
+                    valorEscrito = centena[valorSemVirgula[0]];
+                    
+                    if(valorSemVirgula < 20){
+                        valorEscrito = valorEscrito + " e "+ dz[parseInt(valorSemVirgula[2])] + " reais";
+                    }
+                    else {
+                        valorEscrito = valorEscrito + " e "+ dezena[parseInt(valorSemVirgula[1])] + selecione(valorSemVirgula[2] > 0, " e ", "") + uni[parseInt(valorSemVirgula[2])] + " reais";
+                    }
+                }
+
+                //Com 4 digitos sem virgula
+                else if(valorSemVirgula.length === 4){
+                    // Atribui unidade milhar
+                    valorEscrito = selecione(valorSemVirgula[0] == 1, 'Mil ', uni[valorSemVirgula[0]] + ' mil ');
+                    // Atribui centena
+                    valorEscrito = valorEscrito + selecione(valorSemVirgula[1] > 0, centena[valorSemVirgula[1]], uni[valorSemVirgula[0]]);
+                    
+                    if(valorSemVirgula[2] == 1 && valorSemVirgula[3] >= 0){
+                        valorEscrito = valorEscrito + " e "+ dz[parseInt(valorSemVirgula[2])] + " reais";
+                    }
+                    else {
+                        valorEscrito = valorEscrito + " e "+ dezena[parseInt(valorSemVirgula[2])] + selecione(valorSemVirgula[3] > 0, " e ", "") + uni[parseInt(valorSemVirgula[3])] + " reais";
+                    }
+                }
+
+                //Com 5 digitos sem virgula
+                else if (valorSemVirgula.length === 5){
+                    // Atribui dezena de milhar
+                    valorEscrito = selecione(valorSemVirgula[0] == 1 && valorSemVirgula[1] > 0, dz[valorSemVirgula[1]], dezena[valorSemVirgula[0]] + selecione(valorSemVirgula[1] > 0, " e " + uni[valorSemVirgula[1]], '')) + ' mil ';
+                    // Atribui centena
+                    valorEscrito = valorEscrito + selecione(valorSemVirgula[3] > 0, centena[valorSemVirgula[2]], '');
+                    
+                    if(valorSemVirgula[3] == 1 && valorSemVirgula[4] >= 0){
+                        valorEscrito = valorEscrito + " e "+ dz[parseInt(valorSemVirgula[3])] + " reais";
+                    }
+                    else {
+                        valorEscrito = valorEscrito + " e "+ dezena[parseInt(valorSemVirgula[3])] + selecione(valorSemVirgula[4] > 0, " e ", "") + uni[parseInt(valorSemVirgula[4])] + " reais";
+                    }
+                }
+
+                //Com 6 digitos sem virgula
+                else if (valorSemVirgula.length === 6){
+                    // Atribui centena de milhar
+                    valorEscrito = centena[valorSemVirgula[0]];
+                    
+                    var dezenaMilhar = parseInt(valorSemVirgula[1] + valorSemVirgula[2]);
+                    if(dezenaMilhar < 20 && dezenaMilhar > 10){
+                        alert()
+                        valorEscrito = valorEscrito + " e "+ dz[parseInt(valorSemVirgula[2])];
+                    }
+                    else if(dezenaMilhar > 0){
+                        valorEscrito = valorEscrito + " e "+ dezena[parseInt(valorSemVirgula[1])] + selecione(valorSemVirgula[2] > 0, " e ", "") + uni[parseInt(valorSemVirgula[2])];
+                    }
+
+                    valorEscrito += ' mil, ';
+
+                    // Atribui centena
+                    valorEscrito += centena[valorSemVirgula[3]];
+                    
+                    var _dezena = parseInt(valorSemVirgula[4] + valorSemVirgula[5]);
+                    if(_dezena < 20 && _dezena > 0){
+                        valorEscrito = valorEscrito + " e "+ dz[parseInt(valorSemVirgula[5])] + " reais";
+                    }
+                    else if(_dezena > 1){
+                        valorEscrito = valorEscrito + " e "+ dezena[parseInt(valorSemVirgula[4])] + selecione(valorSemVirgula[5] > 0, " e ", "") + uni[parseInt(valorSemVirgula[5])] + " reais";
+                    }
+
+                    valorEscrito += selecione(valorEscrito.includes('reais'), '', ' reais');
+                }
+
+                //Com 7 digitos sem virgula
+                else if (valorSemVirgula.length === 7){
+                    // Atribui unidade de milhão
+                    valorEscrito = uni[valorSemVirgula[0]] + selecione(valorSemVirgula[0] > 1, ' milhões ', ' milhão ');
+
+                    // Atribui centena de milhar
+                    valorEscrito += centena[valorSemVirgula[1]];
+                    
+                    var dezenaMilhar = parseInt(valorSemVirgula[2] + valorSemVirgula[3]);
+                    if(dezenaMilhar < 20 && dezenaMilhar > 10){
+                        alert()
+                        valorEscrito = valorEscrito + " e "+ dz[parseInt(valorSemVirgula[2])];
+                    }
+                    else if(dezenaMilhar > 0){
+                        valorEscrito = valorEscrito + " e "+ dezena[parseInt(valorSemVirgula[1])] + selecione(valorSemVirgula[2] > 0, " e ", "") + uni[parseInt(valorSemVirgula[2])];
+                    }
+
+                    var _milhar = parseInt(valorSemVirgula[1] + valorSemVirgula[2] + valorSemVirgula[3]);
+                    valorEscrito += selecione(_milhar > 1, ' mil ', '');
+
+                    // Atribui centena
+                    valorEscrito += centena[valorSemVirgula[4]];
+                    
+                    var _dezena = parseInt(valorSemVirgula[5] + valorSemVirgula[6]);
+                    if(_dezena < 20 && _dezena > 0){
+                        valorEscrito = valorEscrito + " e "+ dz[parseInt(valorSemVirgula[6])] + " reais";
+                    }
+                    else if(_dezena > 1){
+                        valorEscrito = valorEscrito + " e "+ dezena[parseInt(valorSemVirgula[5])] + selecione(valorSemVirgula[6] > 0, " e ", "") + uni[parseInt(valorSemVirgula[6])] + " reais";
+                    }
+
+                    valorEscrito += selecione(valorEscrito.includes('reais'), '', ' reais');
+                }
+
+                //Com 8 digitos sem virgula
+                else if (valorSemVirgula.length === 8){
+                    // Atribui dezena de milhão
+                    var dezenaMilhao = parseInt(valorSemVirgula[0] + valorSemVirgula[1]);
+                    if(dezenaMilhao < 20 && dezenaMilhao > 10){
+                        valorEscrito = dz[parseInt(valorSemVirgula[1])];
+                    }
+                    else if(dezenaMilhao > 0){
+                        valorEscrito = dezena[parseInt(valorSemVirgula[0])] + selecione(valorSemVirgula[1] > 0, " e ", "") + uni[parseInt(valorSemVirgula[1])];
+                    }
+
+                    valorEscrito += " milhões ";
+
+                    // Atribui centena de milhar
+                    valorEscrito += centena[valorSemVirgula[2]];
+                    
+                    var dezenaMilhar = parseInt(valorSemVirgula[3] + valorSemVirgula[4]);
+                    if(dezenaMilhar < 20 && dezenaMilhar > 10){
+                        valorEscrito = valorEscrito + " e "+ dz[parseInt(valorSemVirgula[4])];
+                    }
+                    else if(dezenaMilhar > 0){
+                        valorEscrito = valorEscrito + " e "+ dezena[parseInt(valorSemVirgula[3])] + selecione(valorSemVirgula[4] > 0, " e ", "") + uni[parseInt(valorSemVirgula[4])];
+                    }
+
+                    var _milhar = parseInt(valorSemVirgula[1] + valorSemVirgula[2] + valorSemVirgula[3]);
+                    valorEscrito += selecione(_milhar > 1, ' mil ', '');
+
+                    // Atribui centena
+                    valorEscrito += centena[valorSemVirgula[5]];
+                    
+                    var _dezena = parseInt(valorSemVirgula[6] + valorSemVirgula[7]);
+                    if(_dezena < 20 && _dezena > 0){
+                        valorEscrito = valorEscrito + " e "+ dz[parseInt(valorSemVirgula[7])] + " reais";
+                    }
+                    else if(_dezena > 1){
+                        valorEscrito = valorEscrito + " e "+ dezena[parseInt(valorSemVirgula[6])] + selecione(valorSemVirgula[7] > 0, " e ", "") + uni[parseInt(valorSemVirgula[7])] + " reais";
+                    }
+
+                    valorEscrito += selecione(valorEscrito.includes('reais'), '', ' reais');
+                }
+
+                //Com 9 digitos sem virgula
+                else if (valorSemVirgula.length === 9){
+                    // Atribui centena de milhão
+                    valorEscrito += centena[valorSemVirgula[0]];
+
+                    // Atribui dezena de milhão
+                    var dezenaMilhao = parseInt(valorSemVirgula[1] + valorSemVirgula[2]);
+                    if(dezenaMilhao < 20 && dezenaMilhao > 10){
+                        valorEscrito += " " + dz[parseInt(valorSemVirgula[2])];
+                    }
+                    else if(dezenaMilhao > 0){
+                        valorEscrito += " " + dezena[parseInt(valorSemVirgula[1])] + selecione(valorSemVirgula[2] > 0, " e ", "") + uni[parseInt(valorSemVirgula[2])];
+                    }
+
+                    valorEscrito += " milhões ";
+
+                    // Atribui centena de milhar
+                    valorEscrito += centena[valorSemVirgula[3]];
+                    
+                    var dezenaMilhar = parseInt(valorSemVirgula[4] + valorSemVirgula[5]);
+                    if(dezenaMilhar < 20 && dezenaMilhar > 10){
+                        valorEscrito = valorEscrito + " e "+ dz[parseInt(valorSemVirgula[5])];
+                    }
+                    else if(dezenaMilhar > 0){
+                        valorEscrito = valorEscrito + " e "+ dezena[parseInt(valorSemVirgula[4])] + selecione(valorSemVirgula[5] > 0, " e ", "") + uni[parseInt(valorSemVirgula[5])];
+                    }
+
+                    var _milhar = parseInt(valorSemVirgula[1] + valorSemVirgula[2] + valorSemVirgula[3]);
+                    valorEscrito += selecione(_milhar > 1, ' mil ', '');
+
+                    // Atribui centena
+                    valorEscrito += centena[valorSemVirgula[6]];
+                    
+                    var _dezena = parseInt(valorSemVirgula[7] + valorSemVirgula[8]);
+                    if(_dezena < 20 && _dezena > 0){
+                        valorEscrito = valorEscrito + " e "+ dz[parseInt(valorSemVirgula[8])] + " reais";
+                    }
+                    else if(_dezena > 1){
+                        valorEscrito = valorEscrito + " e "+ dezena[parseInt(valorSemVirgula[7])] + selecione(valorSemVirgula[8] > 0, " e ", "") + uni[parseInt(valorSemVirgula[8])] + " reais";
+                    }
+
+                    valorEscrito += selecione(valorEscrito.includes('reais'), '', ' reais');
+                }
+
+                // Valores após a virgula
+                if(valorAposVirgula){ //CONTA QUANTOS DIGITOS FOI INSERIDO
+                    var centavos = "";
+                    
+                    if(valorAposVirgula.length === 1){
+                        centavos = dezena[parseInt(valorAposVirgula[0])] + " centavo(s)";
+                    }
+                    else if(valorAposVirgula < 10){
+                        centavos = uni[parseInt(valorAposVirgula[1])] + " centavo(s)";
+                    }
+                    else if(valorAposVirgula >= 10 && valorAposVirgula < 20){
+                        centavos = dz[parseInt(valorAposVirgula[1])] + " centavo(s)";
+                    }
+                    else {
+                        centavos = dezena[parseInt(valorAposVirgula[0])] + selecione(valorAposVirgula[1] > 0, " e ", "") + uni[parseInt(valorAposVirgula[1])] + " centavo(s)";
+                    }
+
+                    // Concatenar com reais se for maior que 0 ou imprimir somente os centavos
+                    if(valorEscrito.length > 0){
+                        valorEscrito = valorEscrito + ' e ' + centavos;
+                    } else {
+                        valorEscrito += centavos;
+                    }
+                    
+                }
+
+                return valorEscrito;
+            }
+
+            // Metódo usado ao carregar a pagina
+            function app(){
+                var formulario = document.getElementById("formulario");
+                var valor = document.getElementById("valor");
+                var resultado = document.getElementById("resultado");
+                
+                // Tratamento do formulário ao enviar
+                formulario.onsubmit = function(e){
+                    e.preventDefault();
+                    // Escreve resultado na tag <p>
+                    resultado.innerHTML = valorEmReais(valor.value);
+                }
+            }
+        </script>
+    </section>
+</body>
+</html>
